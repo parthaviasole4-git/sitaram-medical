@@ -1,0 +1,162 @@
+<div class="auth">
+  <p-toast position="center"></p-toast>
+  <!-- Left Panel: Login Form -->
+  <section class="panel" aria-label="Sign in">
+    <div class="brand">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Sitaram Medical
+    </div>
+
+
+
+    <div class="card-header">
+      <h1 class="title">
+        {{ isForgot() ? 'Reset Password' : (isRegister() ? 'Create an account' : 'Sign In') }}
+      </h1>
+      <div class="subtitle">
+        {{ isForgot() ? 'Enter your email to receive a reset link.' : (isRegister() ? 'Enter your details to sign up.' : 'Welcome back! Please sign in to continue.') }}
+      </div>
+    </div>
+
+
+
+    <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+      <fieldset [disabled]="loading()" style="border: none; padding: 0; margin: 0;">
+      
+      <!-- Name (Register Only) -->
+      <div class="field" *ngIf="isRegister()">
+        <label class="label">Full Name</label>
+        <div class="input-wrap">
+          <input class="input" type="text" formControlName="name" placeholder="John Doe" />
+        </div>
+        <span class="error" *ngIf="name.touched && name.invalid">Name is required</span>
+      </div>
+
+      <!-- Email -->
+      <div class="field">
+        <label class="label">Email</label>
+        <div class="input-wrap">
+          <input class="input" type="email" formControlName="email" placeholder="name@example.com" />
+        </div>
+        <span class="error" *ngIf="email.touched && email.invalid">Enter a valid email</span>
+      </div>
+
+      <!-- Mobile (Register Only) -->
+      <div class="field" *ngIf="isRegister()">
+        <label class="label">Mobile</label>
+        <div class="input-wrap">
+          <input class="input" type="tel" formControlName="mobile" placeholder="9999999999" maxlength="10" />
+        </div>
+        <span class="error" *ngIf="mobile.touched && mobile.invalid">Enter a valid 10-digit mobile number</span>
+      </div>
+
+      <!-- Location (Register Only) -->
+      <div class="field" *ngIf="isRegister()">
+        <label class="label">Location</label>
+        <div class="input-wrap">
+          <input class="input" type="text" formControlName="location" placeholder="Delhi" />
+        </div>
+        <span class="error" *ngIf="location.touched && location.invalid">Location is required</span>
+      </div>
+
+      <!-- Password (Login & Register) -->
+      <div class="field" *ngIf="!isForgot()">
+        <label class="label">Password</label>
+        <div class="input-wrap" style="position: relative;">
+          <input class="input" [type]="showPassword() ? 'text' : 'password'" formControlName="password" placeholder="••••••••" />
+          <button type="button" aria-label="Toggle password visibility" (click)="toggleShowPassword()" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); border: none; background: transparent; cursor: pointer; color: var(--text-tertiary);">
+            <ng-container *ngIf="!showPassword()">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </ng-container>
+            <ng-container *ngIf="showPassword()">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 3l18 18M10.73 5.08A10.94 10.94 0 0112 5c7 0 11 7 11 7a17.6 17.6 0 01-3.87 4.87M6.11 6.11A17.5 17.5 0 001 12s4 7 11 7a10.94 10.94 0 005.27-1.35"/>
+              </svg>
+            </ng-container>
+          </button>
+        </div>
+        <span class="error" *ngIf="password.touched && password.invalid">Password is required (min 6 chars)</span>
+      </div>
+
+      <!-- Confirm Password (Register Only) -->
+      <div class="field" *ngIf="isRegister()">
+        <label class="label">Confirm Password</label>
+        <div class="input-wrap" style="position: relative;">
+          <input class="input" [type]="showConfirm() ? 'text' : 'password'" formControlName="confirmPassword" placeholder="••••••••" />
+          <button type="button" aria-label="Toggle confirm password visibility" (click)="toggleShowConfirm()" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); border: none; background: transparent; cursor: pointer; color: var(--text-tertiary);">
+            <ng-container *ngIf="!showConfirm()">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </ng-container>
+            <ng-container *ngIf="showConfirm()">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 3l18 18M10.73 5.08A10.94 10.94 0 0112 5c7 0 11 7 11 7a17.6 17.6 0 01-3.87 4.87M6.11 6.11A17.5 17.5 0 001 12s4 7 11 7a10.94 10.94 0 005.27-1.35"/>
+              </svg>
+            </ng-container>
+          </button>
+        </div>
+        <span class="error" *ngIf="confirmPassword.touched && confirmPassword.invalid">Confirm password is required</span>
+        <span class="error" *ngIf="confirmPassword.touched && confirmPassword.errors?.['mismatch']">Passwords must match</span>
+      </div>
+
+      <!-- Forgot Password Link (Login Only) -->
+      <div style="text-align: right; margin-bottom: 1rem;" *ngIf="!isRegister() && !isForgot()">
+        <a href="javascript:void(0)" (click)="toggleForgot()" style="color: var(--primary); text-decoration: none; font-size: 0.875rem;">Forgot password?</a>
+      </div>
+
+      <div class="error-message" *ngIf="errorMessage()" style="color: red; margin-bottom: 1rem; font-size: 0.875rem;">
+        {{ errorMessage() }}
+      </div>
+      
+      <div class="success-message" *ngIf="successMessage()" style="color: green; margin-bottom: 1rem; font-size: 0.875rem;">
+        {{ successMessage() }}
+      </div>
+
+      <button class="btn primary" type="submit" style="margin-top: 0.5rem;" [disabled]="loading()">
+        <span class="spinner" *ngIf="loading()"></span>
+        {{ loading() ? 'Please wait...' : (isForgot() ? 'Send Reset Link' : (isRegister() ? 'Sign up' : 'Sign in')) }}
+      </button>
+
+      </fieldset>
+
+      <div class="footer-links" style="margin-top: 1.5rem; text-align: center; font-size: 0.875rem;">
+        <ng-container *ngIf="isForgot()">
+          <a href="javascript:void(0)" (click)="toggleForgot()" style="color: var(--primary); text-decoration: none; font-weight: 500;">Back to Login</a>
+        </ng-container>
+        
+        <ng-container *ngIf="!isForgot()">
+          <span *ngIf="!isRegister()">
+            Don't have an account? 
+            <a href="javascript:void(0)" (click)="toggleMode()" style="color: var(--primary); text-decoration: none; font-weight: 500;">Sign up</a>
+          </span>
+          <span *ngIf="isRegister()">
+            Already have an account? 
+            <a href="javascript:void(0)" (click)="toggleMode()" style="color: var(--primary); text-decoration: none; font-weight: 500;">Sign in</a>
+          </span>
+        </ng-container>
+      </div>
+    </form>
+  </section>
+
+  <!-- Right Panel: Visual/Branding -->
+  <section class="hero" aria-hidden="true">
+    <div class="hero-inner">
+      <div class="headline">Manage your medical store efficiently.</div>
+      <div class="subhead">
+        Manage medicines, track orders, and serve patients better with our all‑in‑one platform.
+      </div>
+      <div class="chips">
+        <span class="chip">Prescription Friendly</span>
+        <span class="chip">Fast Delivery</span>
+        <span class="chip">Secure</span>
+      </div>
+    </div>
+  </section>
+</div>

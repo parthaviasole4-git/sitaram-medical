@@ -1,27 +1,15 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideAnimations } from '@angular/platform-browser/animations';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { routes } from './app.routes';
-import { loaderInterceptor } from './core/interceptors/loader.interceptor';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { MessageService } from 'primeng/api';
-import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeuix/themes/aura';
+import { authInterceptor } from './auth/auth.interceptor';
+import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    MessageService,
-    provideZoneChangeDetection({ eventCoalescing: true }), 
-    provideRouter(routes),
+    provideBrowserGlobalErrorListeners(),
     provideAnimations(),
-    provideHttpClient(withInterceptors([loaderInterceptor])),
-    providePrimeNG({
-      theme: {
-        preset: Aura,
-        options: {
-          darkModeSelector: false
-        }
-      }
-    })
+    provideHttpClient(withInterceptors([authInterceptor])),
+    provideRouter(routes)
   ]
 };

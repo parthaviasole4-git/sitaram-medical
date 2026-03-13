@@ -1,0 +1,56 @@
+<div class="page">
+  <div class="search-header">
+    <button class="btn-icon" type="button" (click)="back()" aria-label="Back">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <div class="search-input-wrap">
+      <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M10.8 18.1a7.3 7.3 0 1 1 0-14.6 7.3 7.3 0 0 1 0 14.6Z"
+          stroke="currentColor"
+          stroke-width="1.7"
+        />
+        <path
+          d="M16.6 16.6 21 21"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linecap="round"
+        />
+      </svg>
+      <input
+        class="search-input"
+        type="search"
+        placeholder="Search"
+        [value]="query()"
+        (input)="updateQuery(($any($event.target).value))"
+        autofocus
+      />
+    </div>
+  </div>
+
+  <div class="product-grid" *ngIf="results().length > 0; else none">
+    <div class="product-card" *ngFor="let p of results()">
+      <div class="image-wrap">
+        <img class="image" [src]="p.imageDataUrl" [alt]="p.title" />
+      </div>
+      <div class="content">
+        <div class="name">{{ p.title }}</div>
+        <div class="tag">{{ p.category }} • {{ p.tag }}</div>
+        <div class="footer">
+          <div class="price">{{ p.price }}</div>
+          <button class="btn primary" type="button" (click)="addToCart(p)">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #none>
+    <div class="empty-state" *ngIf="query().trim().length > 0">
+      <div class="empty-title">No results found</div>
+      <div class="empty-subtitle">Try adjusting your search or filter to find what you're looking for.</div>
+    </div>
+  </ng-template>
+</div>

@@ -1,0 +1,81 @@
+<div class="shell">
+  <header class="header">
+    <a class="logo" routerLink="/app/home">Sitaram Medical</a>
+
+    <a class="cart" routerLink="/app/cart" aria-label="Cart">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M6.5 6.5h15l-1.3 7.2a2 2 0 0 1-2 1.6H9.1a2 2 0 0 1-2-1.6L5.7 3.8H3"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M9.5 20a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4Zm8 0a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4Z"
+          fill="currentColor"
+        />
+      </svg>
+      <span class="badge" [attr.aria-label]="cartCount() + ' items'">{{ cartCount() }}</span>
+    </a>
+  </header>
+
+  <main class="content">
+    <router-outlet />
+  </main>
+
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <a class="tab" routerLink="/app/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M4 10.8 12 4l8 6.8V20a1.6 1.6 0 0 1-1.6 1.6H5.6A1.6 1.6 0 0 1 4 20v-9.2Z"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <span>Home</span>
+    </a>
+
+    <a class="tab" routerLink="/app/products" routerLinkActive="active">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M4.5 7.2c0-.9.7-1.6 1.6-1.6h11.8c.9 0 1.6.7 1.6 1.6v12.2c0 .9-.7 1.6-1.6 1.6H6.1c-.9 0-1.6-.7-1.6-1.6V7.2Z"
+          stroke="currentColor"
+          stroke-width="1.7"
+        />
+        <path d="M8 9h8M8 12h8M8 15h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+      </svg>
+      <span>Products</span>
+    </a>
+
+    <a class="tab" routerLink="/app/orders" routerLinkActive="active">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M7 4.8h10A1.8 1.8 0 0 1 18.8 6.6v14.2L12 17.5l-6.8 3.3V6.6A1.8 1.8 0 0 1 7 4.8Z"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <span>Orders</span>
+    </a>
+
+    <a class="tab" routerLink="/app/account" routerLinkActive="active">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M12 12.2a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"
+          stroke="currentColor"
+          stroke-width="1.7"
+        />
+        <path
+          d="M4.5 20.2a7.5 7.5 0 0 1 15 0"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linecap="round"
+        />
+      </svg>
+      <span>Account</span>
+    </a>
+  </nav>
+</div>

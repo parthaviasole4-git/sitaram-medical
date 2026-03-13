@@ -1,0 +1,30 @@
+<div class="page">
+  <div class="page-header">
+    <div class="page-subtitle">Prescription</div>
+  </div>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="step-content">
+      <div class="list-group">
+        <div class="list-item">
+          <label class="item-label">Prescription Number</label>
+          <input type="text" class="item-input" formControlName="prescriptionNo" placeholder="Enter prescription number">
+        </div>
+        <div class="list-item">
+          <label class="item-label">Phone (optional)</label>
+          <input type="text" class="item-input" formControlName="phone" placeholder="Enter phone">
+        </div>
+        <div class="list-item">
+          <label class="item-label">Full Name (optional)</label>
+          <input type="text" class="item-input" formControlName="fullName" placeholder="Enter full name">
+        </div>
+        <div class="list-item">
+          <label class="item-label">Address (optional)</label>
+          <input type="text" class="item-input" formControlName="address" placeholder="Enter address">
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn primary full-width" type="submit" [disabled]="loading()">Continue</button>
+      </div>
+    </div>
+  </form>
+</div>

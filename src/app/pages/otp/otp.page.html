@@ -1,0 +1,57 @@
+<div class="auth">
+  <!-- Left Panel: OTP Form -->
+  <section class="panel" aria-label="Enter OTP">
+    <div class="brand">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Sitaram Medical
+    </div>
+
+    <div class="card-header">
+      <h1 class="title">Verify your code</h1>
+      <div class="subtitle">Enter the 4-digit code we sent to your phone</div>
+    </div>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+      <div class="otp" formArrayName="digits" (paste)="onPaste($event)">
+        <input
+          #otpInput
+          *ngFor="let control of digits.controls; let i = index"
+          class="otp-input"
+          type="text"
+          inputmode="numeric"
+          autocomplete="one-time-code"
+          maxlength="1"
+          [formControlName]="i"
+          (input)="onInput(i, $event)"
+          (keydown)="onKeydown(i, $event)"
+        />
+      </div>
+
+      <button class="btn primary" type="submit">Verify</button>
+
+      <div class="meta">
+        <a class="link" routerLink="/login">Back to login</a>
+        <a class="link" href="#" (click)="resend($event)">Resend code</a>
+      </div>
+    </form>
+  </section>
+
+  <!-- Right Panel: Visual/Branding -->
+  <section class="hero" aria-hidden="true">
+    <div class="hero-inner">
+      <div class="headline">Just one more step.</div>
+      <div class="subhead">
+        Enter the 4-digit code to finish signing in and access your account.
+      </div>
+      <div class="chips">
+        <span class="chip">Private</span>
+        <span class="chip">Fast</span>
+        <span class="chip">Secure</span>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,23 @@
+<div class="page">
+  <div class="page-header">
+    <div class="page-title">Account</div>
+    <div class="page-subtitle">Manage products and your profile</div>
+  </div>
+
+  <div class="card">
+    <div class="list-group">
+      <button class="list-item button-item" type="button" *ngFor="let i of items" (click)="go(i.route)">
+        <div class="icon-wrap" [attr.aria-label]="i.title">
+          <svg *ngIf="i.icon === 'box'" viewBox="0 0 24 24" width="22" height="22"><path d="M4 7l8-4 8 4v10l-8 4-8-4V7z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 3v18M4 7l8 4 8-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          <svg *ngIf="i.icon === 'user'" viewBox="0 0 24 24" width="22" height="22"><path d="M12 13a4.5 4.5 0 1 0-4.5-4.5A4.5 4.5 0 0 0 12 13Z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 21a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <svg *ngIf="i.icon === 'exit'" viewBox="0 0 24 24" width="22" height="22"><path d="M10 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M17 7l5 5-5 5M8 12h14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </div>
+        <div class="item-content">
+          <div class="item-title">{{ i.title }}</div>
+          <div class="item-sub">{{ i.subtitle }}</div>
+        </div>
+        <div class="chevron">›</div>
+      </button>
+    </div>
+  </div>
+</div>

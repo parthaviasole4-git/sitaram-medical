@@ -1,0 +1,4 @@
+.page { padding: 8px; }
+.actions { display: grid; gap: 6px; }
+.w-full { width: 100%; }
+.list-group { margin-bottom: 8px; }

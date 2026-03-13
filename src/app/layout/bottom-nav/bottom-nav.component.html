@@ -1,8 +1,0 @@
-<div class="bottom-nav flex justify-content-between align-items-center">
-
-    <div class="nav-item" *ngFor="let item of items"  [routerLinkActiveOptions]="{ exact: true }" [routerLink]="item.route" routerLinkActive="active">
-        <i [class]="item.icon"></i>
-        <span>{{ item.label }}</span>
-    </div>
-
-</div>

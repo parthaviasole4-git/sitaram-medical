@@ -1,0 +1,94 @@
+<div class="page">
+  <div class="header-row">
+    <div>
+      <div class="page-subtitle" *ngIf="filteredOrders().length === 0 && !searchQuery()">No orders yet.</div>
+      <div class="page-subtitle" *ngIf="filteredOrders().length > 0 || searchQuery()">Your recent orders</div>
+    </div>
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input 
+        type="text" 
+        placeholder="Search orders..." 
+        [ngModel]="searchQuery()" 
+        (ngModelChange)="onSearch($event)"
+      >
+    </div>
+  </div>
+
+  <div class="orders-list" *ngIf="filteredOrders().length > 0">
+    <div class="order-card" *ngFor="let o of paginatedOrders()">
+      <div class="order-header">
+        <div class="order-id">Prescription #{{ o.prescriptionNo || o.id }}</div>
+        <div class="order-total">{{ o.totalText }}</div>
+      </div>
+      
+      <div class="order-meta">
+        <span class="status-pill"
+              [class.completed]="o.status === 'Completed' || o.status === 'Delivered'"
+              [class.placed]="o.status === 'Placed'"
+              [class.pending]="o.status === 'Pending'"
+              (click)="goToVendor(o)">
+          {{ o.status === 'OutForDelivery' ? 'Out for Delivery' : (o.status === 'Placed' ? 'Processing' : (o.status === 'Delivered' ? 'Delivered' : (o.status === 'Pending' ? 'Pending' : 'Completed'))) }}
+        </span>
+        <div *ngIf="o.status === 'OutForDelivery' && o.deliveryOtp" class="otp-container">
+          <div class="otp-header">
+            <span class="otp-label">Delivery Verification Code</span>
+            <button class="btn-copy" (click)="copyOtp(o.deliveryOtp)" title="Copy Code">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="otp-value">{{ o.deliveryOtp }}</div>
+          <div class="otp-hint">Share this code with the delivery agent to receive your order.</div>
+        </div>
+        <span class="meta-text">{{ o.paymentStatus }} • {{ o.paymentMethod }}</span>
+        <span class="meta-text">{{ formatTime(o.createdAt) }}</span>
+      </div>
+
+      <div class="order-items">
+        <div class="order-item" *ngFor="let i of o.items">
+          <div class="item-image-wrap">
+            <img class="item-image" [src]="i.imageDataUrl" [alt]="i.title" />
+          </div>
+          <div class="item-details">
+            <div class="item-name">{{ i.title }}</div>
+            <div class="item-qty">Qty: {{ i.qty }}</div>
+          </div>
+          <div class="item-price">{{ i.lineTotalText }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="filteredOrders().length === 0 && searchQuery()">
+    <div class="empty-text">No orders found matching "{{ searchQuery() }}"</div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="totalPages() > 1">
+    <button class="page-btn nav" [disabled]="currentPage() === 1" (click)="setPage(currentPage() - 1)">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    
+    <button 
+      class="page-btn number" 
+      *ngFor="let p of pages()" 
+      [class.active]="p === currentPage()"
+      (click)="setPage(p)">
+      {{ p }}
+    </button>
+
+    <button class="page-btn nav" [disabled]="currentPage() === totalPages()" (click)="setPage(currentPage() + 1)">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</div>
