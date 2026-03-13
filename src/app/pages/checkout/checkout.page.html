@@ -20,8 +20,8 @@
           >
         </div>
       </div>
-      <div class="error-text" *ngIf="prescriptionNo.invalid && prescriptionNo.touched">
-        Please enter a valid prescription number.
+      <div class="error-text" *ngIf="showError()">
+        please enter PrescriptionNo
       </div>
       <div class="payment-methods" role="radiogroup" aria-label="Payment method" *ngIf="false">
         

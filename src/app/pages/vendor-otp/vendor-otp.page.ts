@@ -34,7 +34,7 @@ export class VendorOtpPage {
   ngOnInit() {
     const flow = this.vendor.vendorFlow();
     if (!flow || !(typeof flow.orderId === 'number') || flow.orderId <= 0) {
-      this.router.navigateByUrl('/app/vendor/prescription');
+      this.router.navigateByUrl('/app/cart');
     }
   }
 
@@ -46,17 +46,41 @@ export class VendorOtpPage {
       return;
     }
     this.loading.set(true);
-    this.vendor.verify({ orderId: flow.orderId, otp: this.form.value.otp as string }).subscribe({
-      next: () => {
-        this.loading.set(false);
-        this.delivered.set(true);
-        this.cart.clear();
-        this.messages.add({ severity: 'success', summary: 'Delivered', detail: 'Order marked as delivered.' });
-        setTimeout(() => this.router.navigateByUrl('/app/orders'), 800);
+    const otp = this.form.value.otp as string;
+    
+    // Step 1: External Verification (from Postman screenshot)
+    this.vendor.externalVerify({ PrescriptionNo: flow.prescriptionNo, otp }).subscribe({
+      next: (res) => {
+        if (res && res.success === true) {
+          // Success: Call original backend to mark as delivered
+          this.vendor.verify({ orderId: flow.orderId, otp }).subscribe({
+            next: (res) => {
+              this.loading.set(false);
+              this.delivered.set(true);
+              this.cart.clear();
+              const msg = res?.message || 'Order marked as delivered.';
+              this.messages.add({ severity: 'success', summary: 'Delivered', detail: msg });
+              setTimeout(() => this.router.navigateByUrl('/app/orders'), 800);
+            },
+            error: (err) => {
+              this.loading.set(false);
+              const msg = (err?.error && (err.error.message || err.error.error)) || err?.message || 'Internal verification failed. Try again.';
+              this.messages.add({ severity: 'error', summary: 'Error', detail: msg });
+            }
+          });
+        } else {
+          // Failure: Show message from response and reset OTP
+          this.loading.set(false);
+          const msg = res?.message || 'Verification failed. Please check your OTP.';
+          this.messages.add({ severity: 'error', summary: 'Verification Failed', detail: msg });
+          this.form.reset();
+        }
       },
-      error: () => {
+      error: (err) => {
         this.loading.set(false);
-        this.messages.add({ severity: 'error', summary: 'Error', detail: 'Invalid OTP. Try again.' });
+        const errorMsg = (err?.error && (err.error.message || err.error.error)) || 'External verification service error';
+        this.messages.add({ severity: 'error', summary: 'Error', detail: errorMsg });
+        this.form.reset();
       }
     });
   }
@@ -64,10 +88,13 @@ export class VendorOtpPage {
   resend() {
     const flow = this.vendor.vendorFlow();
     if (!flow) return;
-    this.vendor.resend({ prescriptionNo: flow.prescriptionNo }).subscribe({
+    this.vendor.resend({ PrescriptionNo: flow.prescriptionNo }).subscribe({
       next: (res) => {
-        const msg = res?.message || 'OTP resent';
-        this.messages.add({ severity: 'info', summary: 'Resent', detail: msg });
+        if (res && res.success === true) {
+          this.messages.add({ severity: 'info', summary: 'Resent', detail: 'OTP resent' });
+        } else {
+          this.messages.add({ severity: 'error', summary: 'Error', detail: 'invalid prescription No' });
+        }
       },
       error: () => this.messages.add({ severity: 'error', summary: 'Error', detail: 'Failed to resend' })
     });

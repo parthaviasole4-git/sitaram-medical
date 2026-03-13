@@ -4,10 +4,6 @@ import { adminGuard, appGuard, guestGuard, otpGuard } from './auth/auth.guards';
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   {
-    path: 'vendor/prescription',
-    loadComponent: () => import('./pages/vendor-prescription/vendor-prescription.page').then(m => m.VendorPrescriptionPage)
-  },
-  {
     path: 'vendor/otp',
     loadComponent: () => import('./pages/vendor-otp/vendor-otp.page').then(m => m.VendorOtpPage)
   },
@@ -72,10 +68,6 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/admin-products/admin-products.page').then(m => m.AdminProductsPage)
       }
       ,
-      {
-        path: 'vendor/prescription',
-        loadComponent: () => import('./pages/vendor-prescription/vendor-prescription.page').then(m => m.VendorPrescriptionPage)
-      },
       {
         path: 'vendor/otp',
         loadComponent: () => import('./pages/vendor-otp/vendor-otp.page').then(m => m.VendorOtpPage)

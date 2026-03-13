@@ -1,7 +1,7 @@
 import { NgFor, NgIf } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { ReactiveFormsModule, FormControl } from '@angular/forms';
+import { ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { AuthService } from '../../auth/auth.service';
 import { CartService } from '../../store/cart.service';
 import { OrdersService } from '../../store/orders.service';
@@ -27,7 +27,8 @@ export class CheckoutPage {
 
   readonly step = signal<'payment'>('payment');
 
-  readonly prescriptionNo = new FormControl('');
+  readonly prescriptionNo = new FormControl('', { validators: [Validators.required], nonNullable: true });
+  readonly showError = signal(false);
   readonly paymentMethod = signal<'COD' | 'Card' | 'UPI'>('COD');
   readonly hasItems = computed(() => this.items().length > 0);
   readonly loading = signal(false);
@@ -40,6 +41,12 @@ export class CheckoutPage {
   select(method: 'COD' | 'Card' | 'UPI') { this.paymentMethod.set(method); }
 
   async pay() {
+    if (this.prescriptionNo.invalid) {
+      this.showError.set(true);
+      return;
+    }
+    this.showError.set(false);
+
     if (!this.hasItems()) {
       await this.router.navigateByUrl('/app/cart');
       return;
@@ -53,7 +60,7 @@ export class CheckoutPage {
 
     this.loading.set(true);
 
-    const payload = { prescriptionNo: this.prescriptionNo.value || '' };
+    const payload = { prescriptionNo: this.prescriptionNo.value };
 
     this.vendor.init(payload).subscribe({
       next: async (res) => {
@@ -65,13 +72,17 @@ export class CheckoutPage {
           const parsed = parseInt(orderId, 10);
           orderId = isNaN(parsed) ? null : parsed;
         }
-        const prescriptionNo = this.prescriptionNo.value || '';
+        const prescriptionNo = this.prescriptionNo.value;
         if (prescriptionNo) {
           if (typeof orderId === 'number' && orderId > 0) {
             this.vendor.vendorFlow.set({ orderId, prescriptionNo });
           } else {
             this.vendor.vendorFlow.set({ orderId: -1, prescriptionNo });
           }
+          
+          // Success: Clear the cart
+          this.cart.clear();
+          
           await this.router.navigateByUrl('/app/vendor/otp');
         } else {
           alert('Failed to start prescription flow.');

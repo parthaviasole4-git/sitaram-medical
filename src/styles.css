@@ -1,5 +1,5 @@
 @import "primeicons/primeicons.css";
-/* Using CDN links in index.html for PrimeNG CSS to avoid Vite package exports issue */
+/* Using modern PrimeNG provider config in app.config.ts */
 
 :root {
   /* Colors */

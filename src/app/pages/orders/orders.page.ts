@@ -120,7 +120,7 @@ export class OrdersPage {
     if (!isNaN(orderIdNum)) {
       this.vendor.vendorFlow.set({ orderId: orderIdNum, prescriptionNo });
     }
-    this.vendor.resend({ prescriptionNo }).subscribe({
+    this.vendor.resend({ PrescriptionNo: prescriptionNo }).subscribe({
       complete: () => {
         this.router.navigateByUrl('/app/vendor/otp');
       }
