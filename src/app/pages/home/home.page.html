@@ -1,0 +1,37 @@
+<div class="page">
+  <div class="hero">
+    <div class="search-bar">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M10.8 18.1a7.3 7.3 0 1 1 0-14.6 7.3 7.3 0 0 1 0 14.6Z"
+          stroke="currentColor"
+          stroke-width="1.7"
+        />
+        <path
+          d="M16.6 16.6 21 21"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linecap="round"
+        />
+      </svg>
+      <input 
+        type="text" 
+        placeholder="Search products..." 
+        style="border:none; outline:none; background:transparent; width:100%; font:inherit; color:inherit;"
+        (keyup.enter)="onSearch($any($event.target).value)"
+      />
+    </div>
+  </div>
+
+  <div class="grid">
+    <a
+      class="card"
+      *ngFor="let c of categories()"
+      routerLink="/app/products"
+      [queryParams]="{ category: c.title }"
+    >
+      <div class="card-title">{{ c.title }}</div>
+      <div class="card-subtitle">{{ c.subtitle }}</div>
+    </a>
+  </div>
+</div>

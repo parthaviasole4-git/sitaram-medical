@@ -1,0 +1,86 @@
+<div class="page">
+  <div class="page-header">
+    <div class="page-subtitle" *ngIf="hasItems()">Review your items</div>
+    <div class="page-subtitle" *ngIf="!hasItems()">Your cart is empty</div>
+  </div>
+
+  <div class="list-group" style="margin-bottom: 1rem;">
+    <div class="cart-item upload-card">
+      <div class="item-content">
+        <div class="item-main">
+          <div class="name">Upload Prescription</div>
+          <div class="price" *ngIf="ocrLoading()"><span class="spinner"></span> Processing...</div>
+        </div>
+        <div class="item-actions" style="gap: 0.75rem;">
+          <input type="file" accept=".pdf,image/*" (change)="selectFile($event)" [disabled]="ocrLoading()" />
+          <span class="file-chip" *ngIf="fileName()">{{ fileName() }}</span>
+        </div>
+        <div *ngIf="previewUrl()" class="image-wrap" style="margin-top: 0.5rem;">
+          <img class="image" [src]="previewUrl()" alt="Prescription Preview" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label" *ngIf="ocrItems().length > 0">Prescription Matches</div>
+  <div class="ocr-list" *ngIf="ocrItems().length > 0" style="margin-bottom: 1rem;">
+    <div class="ocr-item" *ngFor="let m of ocrItems()">
+      <div class="item-content" style="gap: 0.5rem;">
+        <div class="item-main">
+          <div class="name">{{ m.title }}</div>
+          <div class="price">₹{{ m.unitPrice }}</div>
+        </div>
+        <div class="match-line">{{ m.matchedName }}</div>
+        <div class="meta-row">
+          <span class="badge">Req {{ m.requestedQty }}</span>
+          <span class="badge" [class.good]="m.availableQty>0" [class.warn]="m.availableQty===0">Avail {{ m.availableQty }}</span>
+          <span class="badge">Conf {{ m.confidence }}%</span>
+        </div>
+        <button class="btn primary full-width" type="button" (click)="addMatched(m)" [disabled]="m.availableQty <= 0 || ocrLoading()">
+          Add to Cart
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <ng-container *ngIf="hasItems()">
+    <div class="list-group">
+      <div class="cart-item" *ngFor="let i of items()">
+        <div class="image-wrap">
+          <img class="image" [src]="i.product.imageDataUrl" [alt]="i.product.title" />
+        </div>
+
+        <div class="item-content">
+          <div class="item-main">
+            <div class="name">{{ i.product.title }}</div>
+            <div class="price">{{ i.lineTotalText }}</div>
+          </div>
+          
+          <div class="item-actions">
+            <div class="qty-control">
+              <button class="qty-btn" type="button" (click)="dec(i.product.id)" aria-label="Decrease">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>
+              </button>
+              <span class="qty-value">{{ i.qty }}</span>
+              <button class="qty-btn" type="button" (click)="inc(i.product.id)" aria-label="Increase">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              </button>
+            </div>
+            
+            <button class="remove-btn" type="button" (click)="remove(i.product.id)">Remove</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cart-summary">
+      <div class="summary-row">
+        <span class="label">Total</span>
+        <span class="value">{{ totalText() }}</span>
+      </div>
+      <button class="btn primary full-width" type="button" (click)="checkout()">
+        Proceed to Checkout
+      </button>
+    </div>
+  </ng-container>
+</div>

@@ -1,0 +1,41 @@
+<div class="page">
+
+  <main class="main-content">
+    <div class="section-label">Account Settings</div>
+    
+    <div *ngIf="loading()" style="text-align: center; padding: 1rem;">Loading profile...</div>
+    <div *ngIf="errorMessage()" style="color: red; text-align: center; padding: 1rem;">{{ errorMessage() }}</div>
+
+    <form class="list-group" [formGroup]="form" *ngIf="!loading()">
+      <div class="list-item">
+        <label class="item-label">Full Name</label>
+        <input class="item-input" type="text" formControlName="name" placeholder="Your name" />
+      </div>
+      
+      <div class="list-item">
+        <label class="item-label">Email</label>
+        <input class="item-input" type="email" formControlName="email" placeholder="name@email.com" />
+      </div>
+
+      <div class="list-item">
+        <label class="item-label">Mobile</label>
+        <input class="item-input" type="tel" formControlName="mobile" placeholder="9999999999" />
+      </div>
+
+      <div class="list-item">
+        <label class="item-label">Location</label>
+        <input class="item-input" type="text" formControlName="location" placeholder="City" />
+      </div>
+    </form>
+
+    <div class="actions">
+      <button class="btn primary" type="button" (click)="save()">
+        Save Changes
+      </button>
+    </div>
+
+    <div class="logout-section">
+      <button class="btn logout" type="button" (click)="logout()">Log Out</button>
+    </div>
+  </main>
+</div>

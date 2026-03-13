@@ -1,0 +1,21 @@
+<div class="page">
+  <div class="top">
+    <div class="title">Admin dashboard</div>
+    <div class="subtitle">Overview and order updates</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="label">Total users</div>
+      <div class="value">{{ totalUsers() }}</div>
+    </div>
+    <div class="stat">
+      <div class="label">Total products</div>
+      <div class="value">{{ totalProducts() }}</div>
+    </div>
+    <div class="stat warn">
+      <div class="label">Pending orders</div>
+      <div class="value">{{ pendingOrders() }}</div>
+    </div>
+  </div>
+</div>

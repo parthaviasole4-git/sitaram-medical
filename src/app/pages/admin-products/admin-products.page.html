@@ -1,0 +1,195 @@
+<div class="page">
+  <div class="top">
+    <div class="header-row">
+      <div>
+        <div class="title">Products</div>
+        <div class="subtitle">{{ total() }} total products</div>
+      </div>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input 
+          type="text" 
+          placeholder="Search products..." 
+          [ngModel]="searchQuery()" 
+          (ngModelChange)="onSearch($event)"
+        >
+      </div>
+    </div>
+  </div>
+
+  <div class="actions-bar">
+    <label class="checkbox-wrapper">
+      <input type="checkbox" [checked]="isAllSelected()" (change)="toggleAll()" [disabled]="products().length === 0">
+      <span>Select All</span>
+    </label>
+    
+    <button class="btn-delete-bulk" *ngIf="hasSelection()" (click)="deleteSelected()">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      {{ selectedProducts().size }}
+    </button>
+    
+    <div style="flex: 1"></div>
+
+    <button class="btn-import" (click)="openImportModal()">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Import
+    </button>
+  </div>
+
+  <div class="list">
+    <div class="product" *ngFor="let p of products()" [class.selected]="selectedProducts().has(p.id)">
+      <div class="checkbox-col">
+        <input type="checkbox" [checked]="selectedProducts().has(p.id)" (change)="toggleSelection(p.id)">
+      </div>
+      <div class="image-wrapper" (click)="onImageClick(p)" [title]="p.imageDataUrl ? 'Click to update or remove image' : 'Click to add image'">
+        <img *ngIf="p.imageDataUrl" class="image" [src]="p.imageDataUrl" [alt]="p.title" />
+        <div *ngIf="!p.imageDataUrl" class="no-image">No Image</div>
+      </div>
+      <div class="left">
+        <div class="name">{{ p.title }}</div>
+        <div class="meta">{{ p.category }} • {{ p.tag }}</div>
+      </div>
+      <div class="right">
+        <div class="price">{{ p.price }}</div>
+        
+        <!-- View Mode -->
+        <div class="stock-badge-wrapper" *ngIf="editingId() !== p.id" (click)="startEdit(p)" title="Click to edit stock">
+          <div class="stock-badge" [class.low]="p.quantity <= 5" [class.out]="p.quantity === 0">
+            {{ p.quantity > 0 ? p.quantity + ' in stock' : 'Out of Stock' }}
+          </div>
+          <svg class="edit-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <!-- Edit Mode -->
+        <div class="stock-edit" *ngIf="editingId() === p.id">
+          <input type="number" [ngModel]="editingQty()" (ngModelChange)="editingQty.set($event)" (keydown.enter)="saveEdit()" (keydown.escape)="cancelEdit()" min="0">
+          <button class="btn-icon-save" (click)="saveEdit()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </button>
+          <button class="btn-icon-cancel" (click)="cancelEdit()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="totalPages() > 1">
+    <button class="page-btn nav" [disabled]="currentPage() === 1" (click)="setPage(currentPage() - 1)">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    
+    <button 
+      class="page-btn number" 
+      *ngFor="let p of pages()" 
+      [class.active]="p === currentPage()"
+      (click)="setPage(p)">
+      {{ p }}
+    </button>
+
+    <button class="page-btn nav" [disabled]="currentPage() === totalPages()" (click)="setPage(currentPage() + 1)">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" *ngIf="pendingDelete()">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Delete Product</div>
+        <button class="btn-close" (click)="cancelDelete()">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        {{ pendingDelete()?.message }}
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="cancelDelete()">Cancel</button>
+        <button class="btn-modal-danger" (click)="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import Modal -->
+  <div class="modal-overlay" *ngIf="importModalOpen()">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Import Products</div>
+        <button class="btn-close" (click)="closeImportModal()">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Select Excel File (.xlsx)</label>
+          <input type="file" accept=".xlsx" (change)="onFileSelected($event)">
+          <div class="hint">Columns: title, price, tag, category, quantity. Images can be embedded directly in the Excel file.</div>
+        </div>
+
+        <div *ngIf="importError()" class="error-msg">
+          {{ importError() }}
+        </div>
+
+        <div *ngIf="importStats()" class="success-msg">
+          Successfully added {{ importStats()?.added }} products.
+          <span *ngIf="importStats()?.skipped! > 0">Skipped {{ importStats()?.skipped }} duplicates.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-cancel" (click)="closeImportModal()">Cancel</button>
+        <button class="btn-modal-primary" (click)="importProducts()" [disabled]="isImporting()">
+          {{ isImporting() ? 'Importing...' : 'Import' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Action Modal -->
+  <div class="modal-overlay" *ngIf="pendingImageAction()">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Product Image</div>
+        <button class="btn-close" (click)="closeImageActionModal()">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>What would you like to do with the image for <strong>{{ pendingImageAction()?.product?.title }}</strong>?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal-danger" (click)="removeImage()">Remove Image</button>
+        <button class="btn-modal-primary" (click)="triggerImageUpload(pendingImageAction()!.product.id)">Update Image</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden File Input -->
+  <input type="file" id="hidden-image-input" accept="image/*" style="display: none" (change)="onImageFileSelected($event)">
+</div>

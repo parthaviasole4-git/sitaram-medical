@@ -1,0 +1,51 @@
+<div class="page">
+  <div class="success-card">
+    <div class="success-icon-wrap">
+      <svg class="success-icon" viewBox="0 0 52 52">
+        <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+        <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+      </svg>
+    </div>
+    
+    <h1 class="title">Payment Successful!</h1>
+    <p class="subtitle">Thank you for your purchase.</p>
+
+    <div class="receipt-card" *ngIf="order(); else missing">
+      <div class="receipt-header">
+        <span class="label">Order ID</span>
+        <span class="value">#{{ order()!.id }}</span>
+      </div>
+      <div class="divider"></div>
+      <div class="receipt-row">
+        <span class="label">Amount Paid</span>
+        <span class="value highlight">{{ order()!.totalText }}</span>
+      </div>
+      <div class="receipt-row">
+        <span class="label">Payment Method</span>
+        <span class="value">{{ order()!.paymentMethod }}</span>
+      </div>
+      <div class="receipt-row">
+        <span class="label">Date</span>
+        <span class="value">{{ order()!.createdAt | date:'mediumDate' }}</span>
+      </div>
+    </div>
+
+    <ng-template #missing>
+      <div class="missing-state">
+        <p>Your order has been placed successfully.</p>
+      </div>
+    </ng-template>
+
+    <div class="actions">
+      <button class="btn primary" (click)="goOrders()">
+        Track Order
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="btn secondary" (click)="goHome()">
+        Continue Shopping
+      </button>
+    </div>
+  </div>
+</div>

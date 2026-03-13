@@ -1,0 +1,133 @@
+<div class="page">
+  <div class="top">
+    <div class="header-row">
+      <div>
+        <div class="title">Orders</div>
+        <div class="subtitle">Manage customer orders</div>
+      </div>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input 
+          type="text" 
+          placeholder="Search orders..." 
+          [ngModel]="searchQuery()" 
+          (ngModelChange)="onSearch($event)"
+        >
+      </div>
+    </div>
+  </div>
+
+  <div class="empty" *ngIf="totalOrders() === 0">No orders yet.</div>
+
+  <div class="card empty-state" *ngIf="totalOrders() > 0 && paginatedOrders().length === 0">
+    <div class="empty-icon">
+      <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+    </div>
+    <div class="empty-text">No orders found</div>
+    <div class="empty-sub">Try adjusting your search query</div>
+  </div>
+
+  <div class="orders" *ngIf="paginatedOrders().length > 0">
+    <div class="order" *ngFor="let o of paginatedOrders()">
+      <div class="row">
+        <div class="left">
+          <div class="oid">{{ o.id }}</div>
+          <div class="meta">
+            <span class="pill" [class.completed]="o.status === 'Completed' || o.status === 'Delivered'" [class.placed]="o.status === 'Placed'">
+              {{ o.status === 'OutForDelivery' ? 'Out for Delivery' : (o.status === 'Placed' ? 'Processing' : (o.status === 'Delivered' ? 'Delivered' : 'Completed')) }}
+            </span>
+            <span class="dot" aria-hidden="true"></span>
+            <span class="muted">{{ o.customerName }} • {{ o.customerPhone }}</span>
+            <span class="dot" aria-hidden="true"></span>
+            <span class="muted">{{ formatTime(o.createdAt) }}</span>
+            <span class="dot" aria-hidden="true" *ngIf="o.address"></span>
+            <span class="muted" *ngIf="o.address">{{ o.address }}</span>
+          </div>
+        </div>
+        <div class="right">
+          <div class="total">{{ o.totalText }}</div>
+          <button class="btn primary" type="button" [disabled]="!canAdvance(o) || isSubmitting()" (click)="advance(o)">
+            <span class="spinner" *ngIf="isSubmitting() && updatingOrderId() === o.id"></span>
+            {{ o.status === 'Placed' ? 'Mark Out for Delivery' : (o.status === 'OutForDelivery' ? 'Mark Delivered' : 'Delivered') }}
+          </button>
+        </div>
+      </div>
+
+      <div class="items">
+        <div class="item" *ngFor="let i of o.items">
+          <img class="image" [src]="i.imageDataUrl" [alt]="i.title" />
+          <div class="name">{{ i.title }}</div>
+          <div class="qty">×{{ i.qty }}</div>
+          <div class="amount">{{ i.lineTotalText }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pagination" *ngIf="totalPages() > 1">
+    <button class="page-btn nav" [disabled]="currentPage() === 1" (click)="setPage(currentPage() - 1)">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    
+    <button 
+      class="page-btn number" 
+      *ngFor="let p of pages()" 
+      [class.active]="p === currentPage()"
+      (click)="setPage(p)">
+      {{ p }}
+    </button>
+
+    <button class="page-btn nav" [disabled]="currentPage() === totalPages()" (click)="setPage(currentPage() + 1)">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="otpModalOpen()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Verify Delivery</div>
+      <button class="btn-close" (click)="closeOtpModal()">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p style="margin-top: 0">Please enter the OTP provided by the customer to complete this order.</p>
+      
+      <div class="input-wrap">
+        <input 
+          type="text" 
+          class="input" 
+          placeholder="Enter 6-digit OTP" 
+          [ngModel]="otpInput()" 
+          (ngModelChange)="otpInput.set($event)"
+          maxlength="6"
+          pattern="[0-9]*"
+        >
+      </div>
+      
+      <div *ngIf="otpError()" style="color: #dc2626; font-size: 0.875rem; margin-top: 0.5rem;">
+        {{ otpError() }}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal-cancel" (click)="closeOtpModal()" [disabled]="isSubmitting()">Cancel</button>
+      <button class="btn-modal-primary" (click)="confirmOtp()" [disabled]="otpInput().length !== 6 || isSubmitting()">
+        <span class="spinner" *ngIf="isSubmitting()"></span>
+        Complete Order
+      </button>
+    </div>
+  </div>
+</div>
